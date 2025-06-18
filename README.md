@@ -1,7 +1,7 @@
 # maipluginv2
 MaiBot 0.8.0 (v2)插件公共仓库
 
-本仓库是<a href="https://github.com/MaiM-with-u/MaiBot">MaiBot</a>V2的插件合集
+本仓库是<a href="https://bgithub.xyz/MaiM-with-u/MaiBot">MaiBot</a>V2的插件合集
 
 ## 🔥 安装0.8.0
 
@@ -12,7 +12,7 @@ MaiBot 0.8.0 (v2)插件公共仓库
 - `main`: 稳定发布版本(推荐)
 - `dev`: 开发测试版本(不稳定)
 
-### 最新dev版本部署教程
+### 最新dev版本部署教程（本教程所有命令都位于 ~/ 目录运行）
 - 如何从0.7升级:不到
 - Linux全新安装0.8:
 ```
@@ -76,9 +76,86 @@ g++ --version
 # 如果安装成功，会显示`gcc`和`g++`的版本信息。
 ```
 （二）
+GCC编译
+进入LPMM根目录，安装对应的依赖
+```
+pip install -i https://mirrors.aliyun.com/pypi/simple -r requirements.txt --upgrade
+```
+编译 进入lib/quick_algo/目录，运行命令
+```
+cd lib/quick_algo
+python build_lib.py --cleanup --cythonize --install
+```
+运行完成后 安装依赖
+```
+cd ..
+cd MaiBot-Napcat-Adapter
+uv pip install -i https://mirrors.aliyun.com/pypi/simple -r requirements.txt --upgrade
+```
 
-## 💬 讨论（仅显示空余可用）
-- 麦麦QQ[四群](https://qm.qq.com/q/wGePTl1UyY) 
+ 第四步:部署适配器
+```
+# 复制并重命名文件
+cp template/template_config.toml config.toml
+```
+ 第五步:安装NapCat
+```
+cd ~/
+mkdir NapCat
+cd NapCat
+curl -o \
+napcat.sh \
+https://nclatest.znin.net/NapNeko/NapCat-Installer/main/script/install.sh \
+&& sudo bash napcat.sh
+```
+ 第六步:配置文件
+```
+cd ..
+cd MaiBotv2/MaiBot
+# 创建文件夹
+mkdir config
+# 复制并重命名配置文件
+cp template/bot_config_template.toml config/bot_config.toml
+cp template/template.env .env
+```
+此处按个人需要调整设置 不过多赘述
+
+ 第七步:配置NapCat
+
+1.Napcat中新建websocket客户端并设置反向代理的url（这里以ws://localhost:8095/为例）
+
+2.打开MaiBot-Napcat-Adapter文件夹下的config.toml，配置[Napcat_Server]、[MaiBot_Server]、[Napcat]字段
+
+[Napcat_Server]字段的port,应该与Napcat设置的反向代理的url相同（这里是8095）
+
+[Napcat_Server]字段的heartbeat,应该与Napcat设置的反向代理的心跳间隔相同（注意，Napcat中的间隔为毫秒，填入时请转化为秒，这里是30）
+
+[MaiBot_Server]字段的port,应该与麦麦本体的.env中的PORT相同（此处为8000）
+   
+ ```
+ [Napcat_Server] # Napcat连接的ws服务设置
+host = "localhost" # Napcat设定的主机地址
+port = 8095        # Napcat设定的端口
+heartbeat = 30     # 与Napcat设置的心跳相同（按秒计）
+
+[MaiBot_Server] # 连接麦麦的ws服务设置
+platform_name = "qq" # 标识adapter的名称（必填）
+host = "localhost"   # 麦麦在.env文件中设置的主机地址，即HOST字段
+port = 8000          # 麦麦在.env文件中设置的端口，即PORT字段
+ ```
+ 最后一步:启动！
+持久启动需要使用screen
+ ```
+cd ~/MaiBotv2/MaiBot
+python3 bot.py
+ ```
+启动后稍等配置文件加载完成，加载完成后输入"同意"或"confirmed"代表已经阅读并确认同意更新后的EULA和隐私条款
+```
+cd ~/MaiBotv2/MaiBot-Napcat-Adapter
+python3 main.py
+```
+教程结束
+
 
 ## 📚 文档
 
